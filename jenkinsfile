@@ -1,0 +1,31 @@
+pipeline {
+	agent any
+	stages {
+		stage('Quality Gate') {
+			steps {
+				withSonarQubeEnv('SQserver') {
+					sh './sonar-scanner-5.0.1.3006-linux/bin/sonarNote
+					: Le stage "List files" n'a pour objectif que de démontrer la mise en erreur du job après
+					l'échec de la Quality Gate. Celui-ci n'a pas d'autres intérêts dans cet exemple.
+					Lorsque les alertes qualités (et/ou highlights sécurité) seront traités au sein de SonarQube, le build
+					sera en mesure de passer en succès.
+					Dans le cas des highlights de sécurité, ceux-ci peuvent simplement être révisés manuellement et
+					placés dans un état non bloquant si les bonnes pratiques de sécurité ont été bien été réspéctées.
+					scanner'
+					}
+				script {
+					def qg = waitForQualityGate()
+					if(qg.status != 'OK') {
+						error "Quality Gate failure :
+						${qg.status}"
+						}
+					}
+				}
+			}
+			stage('List files') {
+				steps {
+				sh 'ls -lah .'
+				}
+		}
+	}
+}
